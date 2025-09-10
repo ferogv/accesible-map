@@ -6,17 +6,11 @@
     <title>Mapa Colaborativo de Espacios Accesibles</title>
     <meta name="description" content="Registro y consulta de espacios públicos accesibles" />
     <link rel="icon" href="./assets/favicon.svg" />
-    <!-- Leaflet CSS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <!-- Barra superior (Header / Nav) -->
     <header class="top-nav" id="inicio">
       <div class="logo">Mapa Accesible</div>
       <nav>
@@ -28,9 +22,7 @@
       </nav>
     </header>
 
-    <!-- Layout principal: aside (filtros) | mapa | aside (detalle) -->
     <main class="main-layout" id="espacios">
-      <!-- Filtros (izquierda) -->
       <aside class="sidebar" aria-label="Búsqueda y filtros">
         <div class="card">
           <h2>Buscar</h2>
@@ -68,10 +60,8 @@
         </div>
       </aside>
 
-      <!-- Mapa (centro) + barra de estadísticas (abajo) -->
       <section class="map-area" aria-label="Mapa y estadísticas">
         <div id="map" class="map" role="application" aria-label="Mapa de espacios accesibles"></div>
-
         <div class="stats-bar card" id="estadisticas" aria-live="polite">
           <div><strong>Total:</strong> <span id="statTotal">0</span></div>
           <div><strong>Rampa:</strong> <span id="statRampa">0</span></div>
@@ -81,19 +71,16 @@
         </div>
       </section>
 
-      <!-- Detalle (derecha) -->
       <aside class="detail-panel card" id="detalle" aria-label="Detalle del espacio">
         <h2>Detalle del espacio</h2>
         <p class="muted">Selecciona un marcador en el mapa para ver el detalle aquí.</p>
       </aside>
     </main>
 
-    <!-- Pie de página -->
     <footer class="footer" id="acerca">
       <small>Proyecto académico — Código abierto • GitHub Pages + Firestore + Leaflet</small>
     </footer>
 
-    <!-- Modal de registro -->
     <div class="modal" id="registrarModal" aria-hidden="true" role="dialog" aria-labelledby="registrarTitle">
       <div class="modal__dialog">
         <header class="modal__header">
@@ -149,17 +136,11 @@
       <div class="modal__backdrop"></div>
     </div>
 
-    <!-- Leaflet JS -->
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <!-- Firebase v9 (modular CDN) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
 
-    <!-- App modules -->
     <script type="module" src="./firebase.js"></script>
     <script type="module" src="./detalle.js"></script>
     <script type="module" src="./estadisticas.js"></script>
