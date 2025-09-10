@@ -137,3 +137,16 @@ input:focus,select:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(31,
   border-radius: var(--radius);
   display: block;
 }
+
+/* Asegura que las imágenes nunca excedan el ancho del contenedor */
+.detail-panel .gallery,
+.detail-panel {
+  overflow-x: hidden;
+}
+
+.detail-panel img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
