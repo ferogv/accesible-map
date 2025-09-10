@@ -21,36 +21,59 @@ html,body{height:100%}
 body{
   margin:0;
   font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-  color:var(--text);
-  background:var(--bg);
+  color:var(--text); background:var(--bg);
+  display:flex; flex-direction:column;
 }
-.app-header,.app-footer{
-  padding:1rem 1.25rem;
-  border-bottom:1px solid #eee;
-}
-.app-footer{border-top:1px solid #eee;border-bottom:none;text-align:center;color:var(--muted)}
-h1{margin:.2rem 0 .1rem;font-size:1.25rem}
-.subtitle{margin:0;color:var(--muted);font-size:.95rem}
 
-.layout{
+/* Top nav */
+.top-nav{
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--blue); color:#fff; padding:.6rem 1rem;
+}
+.logo{font-weight:700}
+.top-nav nav a{color:#fff; text-decoration:none; margin-left:1rem}
+.top-nav nav a:hover{opacity:.9}
+
+/* Layout principal */
+.main-layout{
+  flex:1;
   display:grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 320px 1fr 380px;
+  grid-template-rows: 1fr auto;
   gap:1rem;
   padding:1rem;
 }
-.panel{display:flex;flex-direction:column;gap:1rem}
-.panel--map{min-height:70vh}
+
+/* Paneles */
 .card{
   background:#fff;border:1px solid #eee;border-radius:var(--radius);
   box-shadow:var(--shadow);padding:1rem
 }
-.card h2{margin:.2rem 0 1rem;font-size:1rem}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
 
+.sidebar{background:var(--gray-100); padding:1rem; border-radius:var(--radius); overflow:auto}
+.sidebar .card{background:#fff}
+
+.map-area{display:flex; flex-direction:column; min-height:70vh}
+.map{
+  flex:1; border-radius:var(--radius); border:1px solid #eee; min-height:55vh;
+}
+
+.stats-bar{
+  margin-top:1rem; display:flex; gap:1rem; justify-content:space-between; align-items:center;
+  background:var(--gold-100); border:1px solid #f0e1bb;
+}
+
+/* Detail panel */
+.detail-panel{background:var(--blue-100); overflow:auto}
+
+/* Formularios */
 .form .field{margin-bottom:.75rem;display:flex;flex-direction:column;gap:.25rem}
 .field--row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 .field--group{border:1px solid #eee;padding:.5rem .75rem;border-radius:8px}
 input,select{
-  padding:.55rem .6rem;border:1px solid #ddd;border-radius:8px;outline:none
+  padding:.55rem .6rem;border:1px solid #ddd;border-radius:8px;outline:none;background:#fff
 }
 input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,111,235,.12)}
 .btn{
@@ -58,21 +81,36 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,1
   padding:.6rem .9rem;cursor:pointer
 }
 .btn:hover{filter:brightness(1.05)}
-.btn--ghost{background:#fff;color:var(--blue);border:1px solid var(--blue);margin-left:.5rem}
+.btn--ghost{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+.actions{display:flex; gap:.5rem}
 
-.map{height:55vh;border-radius:var(--radius);border:1px solid #eee}
-.list{margin-top:1rem}
-.list ul{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}
-.list li{
-  border:1px solid #eee;border-radius:8px;padding:.5rem .75rem;display:flex;justify-content:space-between;gap:.5rem
+/* Modal */
+.modal{position:fixed; inset:0; display:none; z-index:1000}
+.modal[aria-hidden="false"]{display:block}
+.modal__backdrop{position:absolute; inset:0; background:rgba(0,0,0,.35)}
+.modal__dialog{
+  position:relative; z-index:1; max-width:640px; margin:5vh auto; background:#fff;
+  border-radius:12px; box-shadow:var(--shadow); overflow:hidden
+}
+.modal__header{
+  display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem;
+  border-bottom:1px solid #eee; background:#fafafa
+}
+.modal__body{padding:1rem}
+.modal__close{
+  background:transparent; border:none; font-size:1.1rem; cursor:pointer; color:#333
 }
 
-.stats{list-style:none;padding:0;margin:0;display:grid;gap:.35rem}
-.msg{min-height:1.25rem;color:var(--muted)}
-
+/* Leaflet popup tweaks */
 .leaflet-popup-content strong{display:block;margin-bottom:.25rem}
 
-@media (max-width: 960px){
-  .layout{grid-template-columns:1fr}
-  .panel--map .map{height:50vh}
+/* Responsive */
+@media (max-width: 1100px){
+  .main-layout{grid-template-columns: 280px 1fr}
+  .detail-panel{display:none}
+}
+@media (max-width: 768px){
+  .main-layout{grid-template-columns: 1fr}
+  .map{min-height:50vh}
+  .stats-bar{flex-wrap:wrap; gap:.5rem}
 }

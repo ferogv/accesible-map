@@ -17,10 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Lint (HTML/CSS/JS minimal)
-        run: |
-          echo "Skipping heavy lint; MVP check done."
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

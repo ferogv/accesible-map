@@ -1,20 +1,3 @@
-# Mapa Colaborativo de Espacios Accesibles (MVP)
+# Mapa Colaborativo de Espacios Accesibles (MVP alineado a wireframe)
 
-Interfaz estática con HTML/CSS/JS, Leaflet y Firestore (lectura/escritura directa), CI/CD con GitHub Pages.
-
-## Requisitos
-- Cuenta Firebase con Firestore habilitado (modo producción, colección `spaces`).
-- Configuración Web App de Firebase (config pública).
-
-## Configuración
-1. Crea un proyecto en Firebase y habilita Firestore.
-2. En `firebase.js`, pega la config de tu app:
-   ```js
-   export const firebaseConfig = {
-     apiKey: "xxx",
-     authDomain: "xxx.firebaseapp.com",
-     projectId: "xxx",
-     storageBucket: "xxx.appspot.com",
-     messagingSenderId: "xxx",
-     appId: "1:xxx:web:xxx",
-   };
+Interfaz HTML/CSS/JS con Leaflet y Firestore, layout según wireframe: nav superior, filtros izquierda, mapa al centro, detalle derecha, estadísticas abajo, registro vía modal.

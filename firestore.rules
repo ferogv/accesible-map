@@ -1,5 +1,4 @@
 // Reglas de seguridad para Firestore (modo proyecto académico)
-// Aplícalas en Firestore -> Rules. Ajusta dominios en production.
 
 rules_version = '2';
 service cloud.firestore {
@@ -17,7 +16,7 @@ service cloud.firestore {
       allow create: if request.time < timestamp.date(2030, 1, 1)
         && isValidSpace(request.resource.data)
         && request.resource.data.keys().hasAll(['name','category','coords','features']);
-      allow update, delete: if false; // No se permite editar/eliminar en el MVP
+      allow update, delete: if false; // Sin edición en el MVP
     }
   }
 }
