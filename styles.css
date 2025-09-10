@@ -119,3 +119,21 @@ input:focus,select:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(31,
       "detail";
   }
 }
+/* -------------------------
+   Galería de imágenes en detalle
+   ------------------------- */
+.detail-panel .gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* dos imágenes por fila */
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.detail-panel .gallery img {
+  width: 100%;        /* ocupa todo el ancho de su columna */
+  height: auto;       /* ajusta la altura proporcionalmente */
+  max-height: 200px;  /* opcional: límite de altura */
+  object-fit: cover;  /* recorta si hace falta para llenar el espacio */
+  border-radius: var(--radius);
+  display: block;
+}
