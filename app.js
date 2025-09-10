@@ -7,11 +7,7 @@ import { updateStats } from "./estadisticas.js";
 import { initFilters, getFilters } from "./filtros.js";
 
 let map, markersLayer;
-const state = {
-  allSpaces: [],
-  filtered: [],
-  selected: null
-};
+const state = { allSpaces: [], filtered: [], selected: null };
 
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
@@ -23,29 +19,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initMap() {
-  map = L.map("map").setView([21.1619, -86.8515], 12); // Cancún
+  map = L.map("map").setView([21.1619, -86.8515], 12);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
   markersLayer = L.layerGroup().addTo(map);
 
-  // Click para autocompletar lat/lng del formulario de registro
   map.on("click", (e) => {
     const lat = e.latlng.lat.toFixed(6);
     const lng = e.latlng.lng.toFixed(6);
-    const latEl = document.getElementById("lat");
-    const lngEl = document.getElementById("lng");
-    if (latEl && lngEl) {
-      latEl.value = lat;
-      lngEl.value = lng;
-    }
+    document.getElementById("lat").value = lat;
+    document.getElementById("lng").value = lng;
   });
 }
 
 async function loadSpaces() {
   const q = query(collection(db, "spaces"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
-  console.log("Snapshot spaces:", snap.size, "documentos");
   const rows = [];
   snap.forEach(doc => {
     const d = doc.data();
@@ -66,28 +56,23 @@ async function loadSpaces() {
 function applyFilters(filters) {
   const { category, features, q } = filters || getFilters();
   const term = normalize(q);
-
   let data = [...state.allSpaces];
-
   if (category) data = data.filter(s => s.category === category);
-  if (features?.length) {
+  if (features.length) {
     data = data.filter(s => features.every(f => s.features?.[f]));
   }
   if (term) {
     data = data.filter(s => {
-      const haystack = normalize(`${s.name} ${s.address || ""}`);
-      return haystack.includes(term);
+      const hay = normalize(`${s.name} ${s.address || ""}`);
+      return hay.includes(term);
     });
   }
-
   state.filtered = data;
   renderMarkers(data);
   updateStats(data);
-  if (state.selected) {
-    const exists = data.find(s => s.id === state.selected.id);
-    if (!exists) {
-      state.selected = null; clearDetail();
-    }
+  if (state.selected && !data.find(s => s.id === state.selected.id)) {
+    state.selected = null;
+    clearDetail();
   }
 }
 
@@ -95,85 +80,85 @@ function renderMarkers(spaces) {
   markersLayer.clearLayers();
   spaces.forEach(s => {
     const marker = L.marker([s.coords.lat, s.coords.lng], {
-      icon: L.divIcon({
-        className: "custom-marker",
-        html: "📍",
-        iconSize: [24, 24],
-        iconAnchor: [12, 24],
-      })
+      icon: L.divIcon({ className: "custom-marker", html: "📍", iconSize: [24,24], iconAnchor: [12,24] })
     });
     marker.on("click", () => {
       state.selected = s;
       renderDetail(s);
       marker.openPopup();
     });
-    marker.bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address || "")}`);
+    marker.bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address||"")}`);
     markersLayer.addLayer(marker);
   });
 }
 
 function wireRegistrarModal() {
-  const open = document.getElementById("openRegistrar");
-  const close = document.getElementById("closeRegistrar");
+  const openBtn = document.getElementById("openRegistrar");
+  const closeBtn = document.getElementById("closeRegistrar");
   const modal = document.getElementById("registrarModal");
   const form = document.getElementById("createForm");
-  const msg = document.getElementById("formMsg");
+  const msg  = document.getElementById("formMsg");
 
-  if (open && modal) open.addEventListener("click", (e) => {
+  // Función para cerrar, resetear y devolver foco
+  function closeModal() {
+    modal.setAttribute("aria-hidden", "true");
+    form.reset();
+    if (msg) msg.textContent = "";
+    openBtn.focus();
+  }
+
+  openBtn.addEventListener("click", (e) => {
     e.preventDefault();
     modal.setAttribute("aria-hidden", "false");
+    document.getElementById("name").focus();
   });
-  if (close && modal) close.addEventListener("click", () => {
-    modal.setAttribute("aria-hidden", "true");
-    form?.reset();
-    if (msg) msg.textContent = "";
+
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
   });
-  modal?.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.setAttribute("aria-hidden", "true");
-      form?.reset();
-      if (msg) msg.textContent = "";
+
+  form.addEventListener("submit", handleCreate);
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    try {
+      const payload = serializeCreateForm();
+      console.log("Intentando guardar en Firestore:", payload);
+      const docRef = await addDoc(collection(db, "spaces"), {
+        ...payload,
+        createdAt: serverTimestamp(),
+      });
+      console.log("Documento guardado con ID:", docRef.id);
+
+      // Cerrar el modal tras guardar
+      closeModal();
+
+      // Añadir optimísticamente al estado y re-render
+      state.allSpaces.unshift({ id: docRef.id, ...payload });
+      applyFilters(getFilters());
+    } catch (err) {
+      console.error("Error en handleCreate:", err);
+      if (msg) {
+        msg.textContent = err.message || "Error al guardar";
+        msg.style.color = "crimson";
+      }
     }
-  });
-
-  form?.addEventListener("submit", handleCreate);
-}
-
-async function handleCreate(e) {
-  e.preventDefault();
-  const msg = document.getElementById("formMsg");
-  try {
-    const payload = serializeCreateForm();
-    console.log("Intentando guardar en Firestore:", payload);
-    const docRef = await addDoc(collection(db, "spaces"), {
-      ...payload,
-      createdAt: serverTimestamp(),
-    });
-    console.log("Documento guardado con ID:", docRef.id);
-    // Añadir al estado (optimista)
-    state.allSpaces.unshift({ id: docRef.id, ...payload });
-    applyFilters(getFilters());
-
-    if (msg) { msg.textContent = "Guardado ✔️"; msg.style.color = "green"; }
-    e.target.reset();
-  } catch (err) {
-    console.error("Error en handleCreate:", err);
-    if (msg) { msg.textContent = err.message || "Error al guardar"; msg.style.color = "crimson"; }
   }
 }
 
 function serializeCreateForm() {
-  const name = document.getElementById("name").value.trim();
+  const name  = document.getElementById("name").value.trim();
   const address = document.getElementById("address").value.trim();
-  const lat = parseFloat(document.getElementById("lat").value);
-  const lng = parseFloat(document.getElementById("lng").value);
+  const lat   = parseFloat(document.getElementById("lat").value);
+  const lng   = parseFloat(document.getElementById("lng").value);
   const category = document.getElementById("categoryCreate").value;
-  const rampa = document.querySelector('input[name="rampa"]').checked;
-  const bano = document.querySelector('input[name="bano"]').checked;
-  const senializacion = document.querySelector('input[name="senializacion"]').checked;
-  const estacionamiento = document.querySelector('input[name="estacionamiento"]').checked;
-  const imagesRaw = document.getElementById("images").value.trim();
-  const images = imagesRaw ? imagesRaw.split(",").map(s => s.trim()).filter(Boolean) : [];
+  const rampa      = document.querySelector('input[name="rampa"]').checked;
+  const bano       = document.querySelector('input[name="bano"]').checked;
+  const senial     = document.querySelector('input[name="senializacion"]').checked;
+  const estacion   = document.querySelector('input[name="estacionamiento"]').checked;
+  const imagesRaw  = document.getElementById("images").value.trim();
+  const images     = imagesRaw ? imagesRaw.split(",").map(s=>s.trim()).filter(Boolean) : [];
 
   if (!name || isNaN(lat) || isNaN(lng)) {
     throw new Error("Nombre, latitud y longitud son obligatorios.");
@@ -182,30 +167,23 @@ function serializeCreateForm() {
     throw new Error("Coordenadas fuera de rango.");
   }
 
-  return {
-    name,
-    address: address || null,
-    category,
+  return { name, address: address||null, category,
     coords: { lat, lng },
-    features: { rampa, bano, senializacion, estacionamiento },
-    images,
-    createdAt: null,
+    features: { rampa, bano, senializacion: senial, estacionamiento: estacion },
+    images, createdAt: null
   };
 }
 
 function normalize(s) {
-  return String(s || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
+  return String(s||"").toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "").trim();
 }
 
 function escapeHtml(str) {
   return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
