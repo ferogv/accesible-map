@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mapa Colaborativo de Espacios Accesibles</title>
+    <meta name="description" content="Registro y consulta de espacios públicos accesibles" />
+    <link rel="icon" href="./assets/favicon.svg" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Mapa Colaborativo de Espacios Accesibles</h1>
+      <p class="subtitle">Registro, mapa y estadísticas — MVP</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel--left" aria-label="Controles y registro">
+        <div class="card">
+          <h2>Filtros</h2>
+          <form id="filtersForm" class="form filters">
+            <div class="field">
+              <label for="category">Categoría</label>
+              <select id="category" name="category">
+                <option value="">Todas</option>
+                <option value="parque">Parque</option>
+                <option value="plaza">Plaza</option>
+                <option value="biblioteca">Biblioteca</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <fieldset class="field field--group">
+              <legend>Características</legend>
+              <label><input type="checkbox" name="features" value="rampa" /> Rampa</label>
+              <label><input type="checkbox" name="features" value="bano" /> Baño adaptado</label>
+              <label><input type="checkbox" name="features" value="senializacion" /> Señalización</label>
+              <label><input type="checkbox" name="features" value="estacionamiento" /> Estacionamiento</label>
+            </fieldset>
+            <button type="submit" class="btn">Aplicar filtros</button>
+            <button type="button" id="clearFilters" class="btn btn--ghost">Limpiar</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Registrar espacio</h2>
+          <form id="createForm" class="form">
+            <div class="field">
+              <label for="name">Nombre del espacio</label>
+              <input id="name" name="name" required maxlength="120" />
+            </div>
+            <div class="field">
+              <label for="address">Dirección</label>
+              <input id="address" name="address" maxlength="200" />
+            </div>
+            <div class="field field--row">
+              <div>
+                <label for="lat">Latitud</label>
+                <input id="lat" name="lat" required inputmode="decimal" />
+              </div>
+              <div>
+                <label for="lng">Longitud</label>
+                <input id="lng" name="lng" required inputmode="decimal" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="categoryCreate">Categoría</label>
+              <select id="categoryCreate" name="category" required>
+                <option value="parque">Parque</option>
+                <option value="plaza">Plaza</option>
+                <option value="biblioteca">Biblioteca</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <fieldset class="field field--group">
+              <legend>Características</legend>
+              <label><input type="checkbox" name="rampa" /> Rampa</label>
+              <label><input type="checkbox" name="bano" /> Baño adaptado</label>
+              <label><input type="checkbox" name="senializacion" /> Señalización</label>
+              <label><input type="checkbox" name="estacionamiento" /> Estacionamiento</label>
+            </fieldset>
+            <div class="field">
+              <label for="images">Imágenes (URLs separadas por coma)</label>
+              <input id="images" name="images" placeholder="https://... , https://..." />
+            </div>
+            <button class="btn" type="submit">Guardar</button>
+            <p id="formMsg" class="msg" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Estadísticas</h2>
+          <ul class="stats">
+            <li><strong>Total registros:</strong> <span id="statTotal">0</span></li>
+            <li><strong>Con rampa:</strong> <span id="statRampa">0</span></li>
+            <li><strong>Con baño adaptado:</strong> <span id="statBano">0</span></li>
+            <li><strong>Con señalización:</strong> <span id="statSenializacion">0</span></li>
+            <li><strong>Con estacionamiento:</strong> <span id="statEst">0</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel panel--map" aria-label="Mapa y resultados">
+        <div id="map" class="map" role="application" aria-label="Mapa de espacios accesibles"></div>
+        <div id="list" class="list" aria-label="Listado de resultados">
+          <h2>Resultados</h2>
+          <ul id="results"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <small>Proyecto académico — Código abierto • GitHub Pages + Firestore + Leaflet</small>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Firebase v9 (modular CDN) -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
+
+    <!-- App -->
+    <script type="module" src="./firebase.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

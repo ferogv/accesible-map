@@ -1,0 +1,4 @@
+# Dependencias/editores
+.DS_Store
+node_modules/
+.vscode/

@@ -1,0 +1,23 @@
+// Reglas de seguridad para Firestore (modo proyecto académico)
+// Aplícalas en Firestore -> Rules. Ajusta dominios en production.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidSpace(data) {
+      return data.name is string
+        && data.category in ['parque','plaza','biblioteca','otro']
+        && data.coords.lat >= -90 && data.coords.lat <= 90
+        && data.coords.lng >= -180 && data.coords.lng <= 180;
+    }
+
+    match /spaces/{docId} {
+      allow read: if true; // Público para consulta
+      allow create: if request.time < timestamp.date(2030, 1, 1)
+        && isValidSpace(request.resource.data)
+        && request.resource.data.keys().hasAll(['name','category','coords','features']);
+      allow update, delete: if false; // No se permite editar/eliminar en el MVP
+    }
+  }
+}
