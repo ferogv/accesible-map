@@ -45,6 +45,7 @@ function initMap() {
 async function loadSpaces() {
   const q = query(collection(db, "spaces"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
+  console.log("Snapshot spaces:", snap.size, "documentos");
   const rows = [];
   snap.forEach(doc => {
     const d = doc.data();
@@ -143,10 +144,12 @@ async function handleCreate(e) {
   const msg = document.getElementById("formMsg");
   try {
     const payload = serializeCreateForm();
+    console.log("Intentando guardar en Firestore:", payload);
     const docRef = await addDoc(collection(db, "spaces"), {
       ...payload,
       createdAt: serverTimestamp(),
     });
+    console.log("Documento guardado con ID:", docRef.id);
     // Añadir al estado (optimista)
     state.allSpaces.unshift({ id: docRef.id, ...payload });
     applyFilters(getFilters());
@@ -154,7 +157,7 @@ async function handleCreate(e) {
     if (msg) { msg.textContent = "Guardado ✔️"; msg.style.color = "green"; }
     e.target.reset();
   } catch (err) {
-    console.error(err);
+    console.error("Error en handleCreate:", err);
     if (msg) { msg.textContent = err.message || "Error al guardar"; msg.style.color = "crimson"; }
   }
 }
