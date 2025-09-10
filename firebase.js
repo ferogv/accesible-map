@@ -26,7 +26,9 @@ if (!firebaseConfig.projectId) {
 }
 
 export const app = initializeApp(firebaseConfig);
+console.log("Firebase inicializada:", firebaseConfig.projectId);
 export const db = getFirestore(app);
+console.log("Firestore lista.", db.app.options.projectId);
 
 // Re-export utilidades para uso en app.js
 export { collection, addDoc, getDocs, query, orderBy, serverTimestamp };
