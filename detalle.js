@@ -1,29 +1,7 @@
 // detalle.js
 const root = document.getElementById("detalle");
 
-export function renderDetail(space) {
-  if (!root) return;
-  if (!space) return clearDetail();
-
-  const feats = Object.entries(space.features || {})
-    .filter(([, v]) => !!v)
-    .map(([k]) => labelFeature(k))
-    .join(", ") || "—";
-
-  const imgs = (space.images || []).slice(0, 4).map(url => {
-    const safe = String(url);
-    return `<img src="${safe}" alt="Imagen de ${escapeHtml(space.name)}" loading="lazy" />`;
-  }).join("");
-
-  root.innerHTML = `
-    <h2>${escapeHtml(space.name)}</h2>
-    <p class="muted">${escapeHtml(space.address || "Sin dirección")}</p>
-    <p><strong>Categoría:</strong> ${escapeHtml(space.category)}</p>
-    <p><strong>Características:</strong> ${feats}</p>
-    <p><strong>Coordenadas:</strong> ${space.coords.lat}, ${space.coords.lng}</p>
-    ${imgs ? `<div class="gallery">${imgs}</div>` : ""}
-  `;
-}
+import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
 
 export function clearDetail() {
   if (!root) return;
@@ -52,8 +30,6 @@ function escapeHtml(str) {
     .replaceAll("'", "&#39;");
 }
 
-import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
-
 export async function renderDetail(space) {
   if (!space) return clearDetail();
 
@@ -66,10 +42,23 @@ export async function renderDetail(space) {
     </li>
   `).join("");
 
+  const feats = Object.entries(space.features || {})
+    .filter(([, v]) => !!v)
+    .map(([k]) => labelFeature(k))
+    .join(", ") || "—";
+
+  const imgs = (space.images || []).slice(0, 4).map(url => {
+    const safe = String(url);
+    return `<img src="${safe}" alt="Imagen de ${escapeHtml(space.name)}" loading="lazy" />`;
+  }).join("");
+
   root.innerHTML = `
     <h2>${escapeHtml(space.name)}</h2>
     <p class="muted">${escapeHtml(space.address || "Sin dirección")}</p>
     <p><strong>Categoría:</strong> ${escapeHtml(space.category)}</p>
+    <p><strong>Características:</strong> ${feats}</p>
+    <p><strong>Coordenadas:</strong> ${space.coords.lat}, ${space.coords.lng}</p>
+    ${imgs ? `<div class="gallery">${imgs}</div>` : ""}
     <p><strong>Accesorios:</strong></p>
     <ul>${accList || "<li>Sin accesorios</li>"}</ul>
     <form id="addAccForm">
