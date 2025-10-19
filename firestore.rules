@@ -18,5 +18,14 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll(['name','category','coords','features']);
       allow update, delete: if false; // Sin edición en el MVP
     }
+
+    match /spaces/{docId}/accessories/{accId} {
+      allow read: if true;
+      allow create: if request.time < timestamp.date(2030, 1, 1)
+        && request.resource.data.name is string
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0;
+      allow delete: if true; // o restringe según tus necesidades
+    }
   }
 }
