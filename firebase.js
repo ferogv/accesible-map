@@ -16,7 +16,7 @@ export const firebaseConfig = {
   apiKey: "AIzaSyBxhPVy4UOrjq1NjpJHil4oKHRr7cArRw4",
   authDomain: "accesible-map.firebaseapp.com",
   projectId: "accesible-map",
-  storageBucket: "accesible-map.firebasestorage.app",
+  storageBucket: "accesible-map.appspot.com",
   messagingSenderId: "741670264244",
   appId: "1:741670264244:web:29dbc1d9900b843e00e6e1"
 };
