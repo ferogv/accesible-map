@@ -51,3 +51,49 @@ function escapeHtml(str) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
+
+import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
+
+export async function renderDetail(space) {
+  if (!space) return clearDetail();
+
+  const accessories = await getAccessories(space.id);
+
+  const accList = accessories.map(a => `
+    <li>
+      ${a.name} (x${a.quantity})
+      <button data-del="${a.id}">Eliminar</button>
+    </li>
+  `).join("");
+
+  root.innerHTML = `
+    <h2>${escapeHtml(space.name)}</h2>
+    <p class="muted">${escapeHtml(space.address || "Sin dirección")}</p>
+    <p><strong>Categoría:</strong> ${escapeHtml(space.category)}</p>
+    <p><strong>Accesorios:</strong></p>
+    <ul>${accList || "<li>Sin accesorios</li>"}</ul>
+    <form id="addAccForm">
+      <input type="text" id="accName" placeholder="Accesorio" required />
+      <input type="number" id="accQty" value="1" min="1" />
+      <button type="submit">Agregar</button>
+    </form>
+  `;
+
+  // Wire eliminar
+  root.querySelectorAll("button[data-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      await removeAccessory(space.id, btn.dataset.del);
+      renderDetail(space); // recargar
+    });
+  });
+
+  // Wire agregar
+  const form = root.querySelector("#addAccForm");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("accName").value.trim();
+    const qty = parseInt(document.getElementById("accQty").value, 10);
+    await addAccessory(space.id, name, qty);
+    renderDetail(space); // recargar
+  });
+}

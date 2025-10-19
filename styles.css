@@ -142,3 +142,55 @@ input:focus,select:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(31,
   height: auto;
   object-fit: contain;
 }
+
+/* Lista de accesorios en el panel de detalle */
+.detail-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.detail-panel li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: .4rem .6rem;
+  margin-bottom: .5rem;
+}
+
+.detail-panel li button {
+  background: var(--rose);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .3rem .6rem;
+  cursor: pointer;
+  font-size: .85rem;
+}
+
+.detail-panel li button:hover {
+  filter: brightness(1.1);
+}
+
+#addAccForm {
+  display: flex;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+#addAccForm input[type="text"],
+#addAccForm input[type="number"] {
+  flex: 1;
+}
+
+.btn--danger {
+  background: var(--rose);
+  color: #fff;
+  border: none;
+}
+.btn--danger:hover {
+  filter: brightness(1.1);
+}
