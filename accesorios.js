@@ -1,5 +1,19 @@
 // accesorios.js
-import { db, collection, addDoc, deleteDoc, doc, getDocs } from "./firebase.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  serverTimestamp,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+// ...
+
+export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc };
 
 export async function addAccessory(spaceId, name, quantity = 1) {
   if (!name || quantity <= 0) throw new Error("Datos inválidos");
@@ -17,3 +31,5 @@ export async function getAccessories(spaceId) {
   const snapshot = await getDocs(ref);
   return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 }
+
+export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc };
