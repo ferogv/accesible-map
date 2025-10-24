@@ -33,6 +33,9 @@ function escapeHtml(str) {
 export async function renderDetail(space) {
   if (!space) return clearDetail();
 
+  const root = getRoot();
+  if (!root) return;
+
   const accessories = await getAccessories(space.id);
 
   const accList = accessories.map(a => `

@@ -1,3 +1,4 @@
+//accesorios.test.js
 import { addAccessory, removeAccessory, getAccessories } from "./accesorios.js";
 
 describe("Gestión de accesorios", () => {

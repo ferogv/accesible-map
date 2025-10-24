@@ -1,3 +1,4 @@
+//firestore.rules
 // Reglas de seguridad para Firestore (modo proyecto académico)
 
 rules_version = '2';

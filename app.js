@@ -5,6 +5,7 @@ import {
 import { renderDetail, clearDetail } from "./detalle.js";
 import { updateStats } from "./estadisticas.js";
 import { initFilters, getFilters } from "./filtros.js";
+import { render } from "express/lib/response.js";
 
 let map, markersLayer;
 const state = { allSpaces: [], filtered: [], selected: null };
@@ -82,9 +83,13 @@ function renderMarkers(spaces) {
     const marker = L.marker([s.coords.lat, s.coords.lng], {
       icon: L.divIcon({ className: "custom-marker", html: "📍", iconSize: [24,24], iconAnchor: [12,24] })
     });
-    marker.on("click", () => {
+    marker.on("click", async () => {
       state.selected = s;
-      renderDetail(s);
+      try {
+        await renderDetail(s);
+      } catch (err) {
+        console.error("Error al renderizar detalle:", err);
+      }
       marker.openPopup();
     });
     marker.bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address||"")}`);
