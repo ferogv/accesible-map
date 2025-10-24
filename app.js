@@ -5,7 +5,6 @@ import {
 import { renderDetail, clearDetail } from "./detalle.js";
 import { updateStats } from "./estadisticas.js";
 import { initFilters, getFilters } from "./filtros.js";
-import { render } from "express/lib/response.js";
 
 let map, markersLayer;
 const state = { allSpaces: [], filtered: [], selected: null };
