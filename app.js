@@ -191,3 +191,9 @@ function escapeHtml(str) {
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#39;");
 }
+
+marker.on("click", async () => {
+  state.selected = s;
+  try { await renderDetail(s); } catch (e) { console.error("Error en renderDetail:", e); }
+  marker.openPopup();
+});

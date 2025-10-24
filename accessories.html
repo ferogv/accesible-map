@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Accesorios por espacio</title>
+    <link rel="icon" href="./assets/favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .page { max-width: 920px; margin: 1.5rem auto; padding: 0 1rem; }
+      .list { display: grid; gap: .75rem; }
+      .space-card { background:#fff; border:1px solid #ddd; border-radius:12px; padding: .9rem; }
+      .space-header { display:flex; justify-content:space-between; align-items:center; gap:.75rem; }
+      .space-name { font-weight:600; }
+      .acc-list { list-style:none; padding:0; margin:.5rem 0 0 0; }
+      .acc-list li { display:flex; justify-content:space-between; align-items:center; background:#f9fafb; border:1px solid #eee; border-radius:8px; padding:.35rem .6rem; margin-bottom:.4rem; }
+      .acc-form { display:flex; gap:.5rem; margin-top:.5rem; }
+      .acc-form input[type="text"]{ flex:2; }
+      .acc-form input[type="number"]{ width:110px; }
+      .muted{ color:#666; }
+      .btn--danger { background:#FF4D4F; color:#fff; border:none; border-radius:8px; padding:.4rem .6rem; cursor:pointer; }
+      .btn--danger:hover{ filter:brightness(1.08); }
+    </style>
+  </head>
+  <body>
+    <header class="top-nav">
+      <div class="logo">Mapa Accesible</div>
+      <nav>
+        <a href="./index.html">Mapa</a>
+        <a href="./accessories.html">Accesorios</a>
+      </nav>
+    </header>
+
+    <main class="page" id="app">
+      <h1>Lista de accesorios por espacio</h1>
+      <p class="muted">Selecciona un espacio para ver, agregar o eliminar accesorios.</p>
+
+      <section id="spaces" class="list" aria-live="polite"></section>
+    </main>
+
+    <!-- Módulos -->
+    <script type="module">
+      import { db, collection, getDocs, query, orderBy } from "./firebase.js";
+      import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
+
+      const spacesEl = document.getElementById("spaces");
+
+      async function loadSpaces() {
+        const q = query(collection(db, "spaces"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const spaces = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderSpaces(spaces);
+      }
+
+      async function renderSpaces(spaces) {
+        spacesEl.innerHTML = "";
+        for (const s of spaces) {
+          const card = document.createElement("div");
+          card.className = "space-card";
+          card.innerHTML = `
+            <div class="space-header">
+              <div>
+                <div class="space-name">${escapeHtml(s.name)}</div>
+                <div class="muted">${escapeHtml(s.address || "Sin dirección")} — ${escapeHtml(s.category)}</div>
+              </div>
+              <button class="btn" data-toggle="${s.id}">Ver accesorios</button>
+            </div>
+            <div class="panel" id="panel-${s.id}" style="display:none">
+              <ul class="acc-list" id="list-${s.id}"><li class="muted">Cargando...</li></ul>
+
+              <form class="acc-form" id="form-${s.id}">
+                <input type="text" name="name" placeholder="Accesorio (ej. rampa portátil)" required />
+                <input type="number" name="qty" min="1" value="1" />
+                <button type="submit" class="btn">Agregar</button>
+              </form>
+            </div>
+          `;
+          spacesEl.appendChild(card);
+
+          // Toggle panel y cargar accesorios
+          card.querySelector(`[data-toggle="${s.id}"]`).addEventListener("click", async () => {
+            const panel = document.getElementById(`panel-${s.id}`);
+            const listEl = document.getElementById(`list-${s.id}`);
+            const visible = panel.style.display !== "none";
+            panel.style.display = visible ? "none" : "block";
+            if (!visible) {
+              await refreshAccessories(s.id, listEl);
+            }
+          });
+
+          // Agregar accesorio
+          card.querySelector(`#form-${s.id}`).addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const name = form.name.value.trim();
+            const qty = parseInt(form.qty.value, 10);
+            await addAccessory(s.id, name, qty);
+            form.reset();
+            form.qty.value = 1;
+            await refreshAccessories(s.id, document.getElementById(`list-${s.id}`));
+          });
+        }
+      }
+
+      async function refreshAccessories(spaceId, listEl) {
+        const items = await getAccessories(spaceId);
+        if (!items.length) {
+          listEl.innerHTML = `<li class="muted">Sin accesorios</li>`;
+          return;
+        }
+        listEl.innerHTML = items.map(a => `
+          <li>
+            <span>${escapeHtml(a.name)} (x${a.quantity})</span>
+            <button class="btn--danger" data-del="${a.id}">Eliminar</button>
+          </li>
+        `).join("");
+
+        // Wire eliminar
+        listEl.querySelectorAll("button[data-del]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            await removeAccessory(spaceId, btn.dataset.del);
+            await refreshAccessories(spaceId, listEl);
+          });
+        });
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
+
+      // Arranque
+      loadSpaces().catch(err => {
+        console.error("Error cargando espacios:", err);
+        spacesEl.innerHTML = `<div class="space-card"><div class="muted">Error cargando espacios: ${escapeHtml(err.message||String(err))}</div></div>`;
+      });
+    </script>
+  </body>
+</html>
