@@ -117,7 +117,11 @@
         listEl.innerHTML = items.map(a => `
           <li>
             <span>${escapeHtml(a.name)} (x${a.quantity})</span>
-            <button class="btn--danger" data-del="${a.id}">Eliminar</button>
+            <div>
+                <button class="btn" data-inc="${a.id}">+</button>
+                <button class="btn" data-dec="${a.id}">-</button>
+                <button class="btn--danger" data-del="${a.id}">Eliminar</button>
+            </div>
           </li>
         `).join("");
 
@@ -127,6 +131,22 @@
             await removeAccessory(spaceId, btn.dataset.del);
             await refreshAccessories(spaceId, listEl);
           });
+        });
+
+        // Wire incrementar
+        listEl.querySelectorAll("button[data-inc]").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                await updateAccessoryQty(spaceId, btn.dataset.inc, +1);
+                await refreshAccessories(spaceId, listEl);
+            });
+        });
+
+        // Wire decrementar
+        listEl.querySelectorAll("button[data-dec]").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                await updateAccessoryQty(spaceId, btn.dataset.dec, -1);
+                await refreshAccessories(spaceId, listEl);
+            });
         });
       }
 
