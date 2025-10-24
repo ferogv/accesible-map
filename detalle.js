@@ -37,6 +37,7 @@ export async function renderDetail(space) {
   if (!root) return;
 
   const accessories = await getAccessories(space.id);
+  console.log("Accesorios:", accessories);
 
   const accList = accessories.map(a => `
     <li>
