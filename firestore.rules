@@ -21,12 +21,22 @@ service cloud.firestore {
     }
 
     match /spaces/{docId}/accessories/{accId} {
-      allow read: if true;
-      allow create: if request.time < timestamp.date(2030, 1, 1)
-        && request.resource.data.name is string
-        && request.resource.data.quantity is int
-        && request.resource.data.quantity > 0;
-      allow delete: if true; // o restringe según tus necesidades
-    }
+  allow read: if true;
+  allow create: if request.time < timestamp.date(2030, 1, 1)
+    && request.resource.data.name is string
+    && request.resource.data.quantity is int
+    && request.resource.data.quantity > 0;
+  allow delete: if true;
+
+  // Habilitar actualización de cantidad
+  allow update: if
+    request.resource.data.keys().hasOnly(['name','quantity']) ||  // opcional si permites editar nombre
+    request.resource.data.keys().hasOnly(['quantity'])             // mínimo si solo cantidad
+    &&
+    request.resource.data.quantity is int
+    &&
+    request.resource.data.quantity >= 0;  // evita negativos
+}
+
   }
 }
