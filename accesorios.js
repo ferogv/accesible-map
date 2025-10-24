@@ -1,15 +1,5 @@
 // accesorios.js
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  serverTimestamp,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { db, collection, addDoc, getDocs, deleteDoc, doc } from "./firebase.js";
 
 export async function addAccessory(spaceId, name, quantity = 1) {
   if (!name || quantity <= 0) throw new Error("Datos inválidos");
