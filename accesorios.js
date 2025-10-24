@@ -11,10 +11,6 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-// ...
-
-export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc };
-
 export async function addAccessory(spaceId, name, quantity = 1) {
   if (!name || quantity <= 0) throw new Error("Datos inválidos");
   const ref = collection(db, "spaces", spaceId, "accessories");
