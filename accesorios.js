@@ -27,5 +27,3 @@ export async function getAccessories(spaceId) {
   const snapshot = await getDocs(ref);
   return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 }
-
-export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc };
