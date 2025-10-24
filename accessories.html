@@ -68,37 +68,43 @@
             <div class="panel" id="panel-${s.id}" style="display:none">
               <ul class="acc-list" id="list-${s.id}"><li class="muted">Cargando...</li></ul>
 
-              <form class="acc-form" id="form-${s.id}">
-                <input type="text" name="name" placeholder="Accesorio (ej. rampa portátil)" required />
-                <input type="number" name="qty" min="1" value="1" />
-                <button type="submit" class="btn">Agregar</button>
-              </form>
+                <form class="acc-form" id="form-${s.id}">
+                    <select name="name" required>
+                        <option value="">Selecciona accesorio</option>
+                        <option value="Rampa portátil">Rampa portátil</option>
+                        <option value="Barandal">Barandal</option>
+                        <option value="Señalización extra">Señalización extra</option>
+                        <option value="Elevador portátil">Elevador portátil</option>
+                    </select>
+                    <input type="number" name="qty" min="1" value="1" />
+                    <button type="submit" class="btn">Agregar</button>
+                </form>
             </div>
           `;
           spacesEl.appendChild(card);
 
           // Toggle panel y cargar accesorios
-          card.querySelector(`[data-toggle="${s.id}"]`).addEventListener("click", async () => {
-            const panel = document.getElementById(`panel-${s.id}`);
-            const listEl = document.getElementById(`list-${s.id}`);
-            const visible = panel.style.display !== "none";
-            panel.style.display = visible ? "none" : "block";
-            if (!visible) {
-              await refreshAccessories(s.id, listEl);
-            }
-          });
+            card.querySelector(`[data-toggle="${s.id}"]`).addEventListener("click", async () => {
+                const panel = document.getElementById(`panel-${s.id}`);
+                const listEl = document.getElementById(`list-${s.id}`);
+                const visible = panel.style.display !== "none";
+                panel.style.display = visible ? "none" : "block";
+                if (!visible) {
+                await refreshAccessories(s.id, listEl);
+                }
+            });
 
           // Agregar accesorio
-          card.querySelector(`#form-${s.id}`).addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const form = e.currentTarget;
-            const name = form.name.value.trim();
-            const qty = parseInt(form.qty.value, 10);
-            await addAccessory(s.id, name, qty);
-            form.reset();
-            form.qty.value = 1;
-            await refreshAccessories(s.id, document.getElementById(`list-${s.id}`));
-          });
+            card.querySelector(`#form-${s.id}`).addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const name = form.name.value;   // ahora viene del <select>
+                const qty = parseInt(form.qty.value, 10);
+                await addAccessory(s.id, name, qty);
+                form.reset();
+                form.qty.value = 1;
+                await refreshAccessories(s.id, document.getElementById(`list-${s.id}`));
+            });
         }
       }
 
