@@ -11,7 +11,9 @@ import {
   orderBy,
   serverTimestamp,
   deleteDoc,
-  doc
+  doc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 export const firebaseConfig = {
@@ -33,4 +35,4 @@ export const db = getFirestore(app);
 console.log("Firestore lista.", db.app.options.projectId);
 
 // Re-export utilidades para uso en app.js
-export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc };
+export { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, increment };
