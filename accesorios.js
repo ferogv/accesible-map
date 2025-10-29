@@ -18,13 +18,11 @@ export async function getAccessories(spaceId) {
   return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-// Cambiar cantidad de un accesorio existente
+// Nueva función: actualizar cantidad atómicamente
 export async function updateAccessoryQty(spaceId, accessoryId, delta) {
   if (!spaceId || !accessoryId || !Number.isInteger(delta)) {
     throw new Error("Parámetros inválidos");
   }
   const ref = doc(db, "spaces", spaceId, "accessories", accessoryId);
-  await updateDoc(ref, {
-    quantity: increment(delta) // delta puede ser +1 o -1
-  });
+  await updateDoc(ref, { quantity: increment(delta) });
 }

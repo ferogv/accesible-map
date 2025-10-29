@@ -41,7 +41,7 @@
     <!-- Módulos -->
     <script type="module">
       import { db, collection, getDocs, query, orderBy } from "./firebase.js";
-      import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
+      import { getAccessories, addAccessory, removeAccessory, updateAccessoryQty } from "./accesorios.js";
 
       const spacesEl = document.getElementById("spaces");
 
@@ -119,7 +119,7 @@
             <span>${escapeHtml(a.name)} (x${a.quantity})</span>
             <div>
                 <button class="btn" data-inc="${a.id}">+</button>
-                <button class="btn" data-dec="${a.id}">-</button>
+                <button class="btn" data-dec="${a.id}" ${a.quantity <= 1 ? 'disabled' : ''}>-</button>
                 <button class="btn--danger" data-del="${a.id}">Eliminar</button>
             </div>
           </li>
@@ -136,16 +136,24 @@
         // Wire incrementar
         listEl.querySelectorAll("button[data-inc]").forEach(btn => {
             btn.addEventListener("click", async () => {
+              try {
                 await updateAccessoryQty(spaceId, btn.dataset.inc, +1);
                 await refreshAccessories(spaceId, listEl);
+              } catch (err) {
+                console.error("Error incrementando cantidad:", err);
+              }
             });
         });
 
         // Wire decrementar
         listEl.querySelectorAll("button[data-dec]").forEach(btn => {
             btn.addEventListener("click", async () => {
+              try {
                 await updateAccessoryQty(spaceId, btn.dataset.dec, -1);
                 await refreshAccessories(spaceId, listEl);
+              } catch (err) {
+                console.error("Error decrementando cantidad:", err);
+              }
             });
         });
       }

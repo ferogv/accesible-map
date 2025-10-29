@@ -27,6 +27,10 @@ service cloud.firestore {
     && request.resource.data.quantity is int
     && request.resource.data.quantity > 0;
   allow delete: if true;
+  allow update: if request.time < timestamp.date(2030, 1, 1)
+    && request.resource.data.keys().hasOnly(['name','quantity'])
+    && request.resource.data.quantity is int
+    && request.resource.data.quantity >= 0;
 
   // Habilitar actualización de cantidad
   allow update: if

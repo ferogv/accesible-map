@@ -1,9 +1,10 @@
 // detalle.js
-const root = document.getElementById("detalle");
+const getRoot = () => document.getElementById("detalle");
 
 import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
 
 export function clearDetail() {
+  const root = getRoot();
   if (!root) return;
   root.innerHTML = `
     <h2>Detalle del espacio</h2>
@@ -32,11 +33,18 @@ function escapeHtml(str) {
 
 export async function renderDetail(space) {
   if (!space) return clearDetail();
-
   const root = getRoot();
   if (!root) return;
 
-  const accessories = await getAccessories(space.id);
+  let accessories = [];
+  try {
+    accessories = await getAccessories(space.id);
+  } catch (err) {
+    console.error("Error al obtener accesorios:", err);
+    root.innerHTML = `<div class="muted">Error cargando detalle: ${escapeHtml(err.message||String(err))}</div>`;
+    return;
+  }
+
   console.log("Accesorios:", accessories);
 
   const accList = accessories.map(a => `
