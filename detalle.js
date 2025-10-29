@@ -1,7 +1,7 @@
 // detalle.js
-const getRoot = () => document.getElementById("detalle");
+import { getAccessories } from "./accesorios.js";
 
-import { getAccessories, addAccessory, removeAccessory } from "./accesorios.js";
+const getRoot = () => document.getElementById("detalle");
 
 export function clearDetail() {
   const root = getRoot();
@@ -50,7 +50,6 @@ export async function renderDetail(space) {
   const accList = accessories.map(a => `
     <li>
       ${a.name} (x${a.quantity})
-      <button data-del="${a.id}">Eliminar</button>
     </li>
   `).join("");
 
@@ -64,37 +63,14 @@ export async function renderDetail(space) {
     return `<img src="${safe}" alt="Imagen de ${escapeHtml(space.name)}" loading="lazy" />`;
   }).join("");
 
-  root.innerHTML = `
-    <h2>${escapeHtml(space.name)}</h2>
-    <p class="muted">${escapeHtml(space.address || "Sin dirección")}</p>
-    <p><strong>Categoría:</strong> ${escapeHtml(space.category)}</p>
-    <p><strong>Características:</strong> ${feats}</p>
-    <p><strong>Coordenadas:</strong> ${space.coords.lat}, ${space.coords.lng}</p>
-    ${imgs ? `<div class="gallery">${imgs}</div>` : ""}
-    <p><strong>Accesorios:</strong></p>
-    <ul>${accList || "<li>Sin accesorios</li>"}</ul>
-    <form id="addAccForm">
-      <input type="text" id="accName" placeholder="Accesorio" required />
-      <input type="number" id="accQty" value="1" min="1" />
-      <button type="submit">Agregar</button>
-    </form>
-  `;
-
-  // Wire eliminar
-  root.querySelectorAll("button[data-del]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      await removeAccessory(space.id, btn.dataset.del);
-      renderDetail(space); // recargar
-    });
-  });
-
-  // Wire agregar
-  const form = root.querySelector("#addAccForm");
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const name = document.getElementById("accName").value.trim();
-    const qty = parseInt(document.getElementById("accQty").value, 10);
-    await addAccessory(space.id, name, qty);
-    renderDetail(space); // recargar
-  });
-}
+    root.innerHTML = `
+      <h2>${escapeHtml(space.name)}</h2>
+      <p class="muted">${escapeHtml(space.address || "Sin dirección")}</p>
+      <p><strong>Categoría:</strong> ${escapeHtml(space.category)}</p>
+      <p><strong>Características:</strong> ${feats}</p>
+      <p><strong>Coordenadas:</strong> ${space.coords.lat}, ${space.coords.lng}</p>
+      ${imgs ? `<div class="gallery">${imgs}</div>` : ""}
+      <p><strong>Accesorios:</strong></p>
+      <ul>${accList || "<li>Sin accesorios</li>"}</ul>
+    `;
+  }
