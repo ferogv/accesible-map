@@ -1,7 +1,6 @@
 // firebase.js
-// Inicializa Firebase App y exporta Firestore (modular v9)
+// Inicializa Firebase App y exporta utilidades de Firestore (modular v9)
 
-// firebase.js (sustituye la sección de imports y la re-exportación)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore,
@@ -14,7 +13,8 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  increment
+  increment,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 export const firebaseConfig = {
@@ -28,6 +28,7 @@ export const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 console.log("Firebase inicializada:", firebaseConfig.projectId);
+
 export const db = getFirestore(app);
 console.log("Firestore lista.", db.app.options.projectId);
 
@@ -42,7 +43,8 @@ export {
   deleteDoc,
   doc,
   updateDoc,
-  increment
+  increment,
+  setDoc
 };
 
 if (!firebaseConfig.projectId) {
