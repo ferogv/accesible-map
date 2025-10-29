@@ -1,5 +1,6 @@
 // accesorios.js
 import { db, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, increment } from "./firebase.js";
+import { logEvent } from "./telemetry.js";
 
 export async function addAccessory(spaceId, name, quantity = 1) {
   if (!name || quantity <= 0) throw new Error("Datos inválidos");
