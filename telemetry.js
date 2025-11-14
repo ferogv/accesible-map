@@ -43,16 +43,32 @@ export async function logEvent({ level = "info", actor = "anon", event = "", pay
 
   // 2) Apps Script POST (optional, ensures Sheet gets the row)
   try {
-    if (URL_WEB_APP && URL_WEB_APP.startsWith("https://")) {
+    if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com/macros/s/AKfycbyVu_dlXDJhE_JzT019I7W4FDdEkHVu7hwBZ__1odfU_sXav-RtiFA1FW5yyfkPzvx5/exec")) {
       await fetch(URL_WEB_APP, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: "omit"
       });
-      console.log("telemetry: POST to Apps Script OK");
+      //El Apps Script devuelve HTML con JSON dentro; leer texto y parsear JSON
+      const text = await response.text();
+      //Intentar localizar JSON dentro del HTML (el script devuelve solo JSON en el body)
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (e) {
+        // Si viene envuelto en HTML, intentar extraer la parte JSON entre { }
+        const match = text.match(/{[\s\S]*}/);
+        parsed = match ? JSON.parse(match[0]) : null;
+      }
+      if (parsed && parsed.ok) {
+        console.log("telemetry: POST to Apps Script OK");
+      } else {
+        console.warn("telemetry: Apps Scriptresponded", parsed);
+      }
     }
-  } catch (err) {
-    console.error("telemetry: Apps Script POST failed", err);
+    } catch (err) {
+      console.error("telemetry: Apps Script POST failed", err);
   }
 }
 
