@@ -51,3 +51,17 @@ export {
 if (!firebaseConfig.projectId) {
   console.warn("Config Firebase vacía. Agrega tus credenciales en firebase.js");
 }
+
+export const auth = getAuth(app);
+
+signInAnonymously(auth)
+  .then(() => console.log("Firebase Auth: signed in anonymously"))
+  .catch(err => console.warn("Firebase Auth anonymous failed:", err));
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("Firebase Auth state:", user.uid, user.isAnonymous ? "anonymous" : "user");
+  } else {
+    console.log("Firebase Auth: signed out");
+  }
+});
