@@ -16,6 +16,7 @@ import {
   increment,
   setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBxhPVy4UOrjq1NjpJHil4oKHRr7cArRw4",
