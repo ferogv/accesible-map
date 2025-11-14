@@ -41,38 +41,47 @@ export async function logEvent({ level = "info", actor = "anon", event = "", pay
   }
 
   // 2) Apps Script POST
-  if (!URL_WEB_APP) return;
-
-  try {
-    const response = await fetch(URL_WEB_APP, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      credentials: "omit"
-    });
-
-    // leer texto (Apps Script devuelve HTML con JSON dentro)
-    const text = await response.text();
-
-    // intentar parsear JSON directo
-    let parsed = null;
+  // -- enviar a Apps Script con fallback no-cors --
+  if (URL_WEB_APP) {
     try {
-      parsed = JSON.parse(text);
-    } catch (e) {
-      // si viene envuelto en HTML, extraer el JSON dentro de llaves
-      const match = text.match(/\{[\s\S]*\}/);
-      parsed = match ? JSON.parse(match[0]) : null;
-    }
+      // intento normal (intenta leer respuesta)
+      const response = await fetch(URL_WEB_APP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "omit"
+      });
 
-    if (parsed && parsed.ok) {
-      console.log("telemetry: POST to Apps Script OK");
-    } else {
-      console.warn("telemetry: Apps Script responded", parsed, "raw:", text);
+      // tratar la respuesta (Apps Script devuelve HTML con JSON dentro)
+      const text = await response.text();
+      let parsed = null;
+      try { parsed = JSON.parse(text); }
+      catch (e) {
+        const match = text.match(/\{[\s\S]*\}/);
+        parsed = match ? JSON.parse(match[0]) : null;
+      }
+      if (parsed && parsed.ok) console.log("telemetry: POST to Apps Script OK");
+      else console.warn("telemetry: Apps Script responded", parsed, "raw:", text);
+
+    } catch (err) {
+      // si falla por CORS/preflight -> reintentar en modo no-cors (no permite leer respuesta)
+      console.warn("telemetry: normal POST failed, retrying no-cors (will be opaque)", err);
+      try {
+        await fetch(URL_WEB_APP, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          mode: "no-cors",
+          credentials: "omit"
+        });
+        console.log("telemetry: POST to Apps Script attempted with no-cors (opaque). Check sheet for row.");
+      } catch (err2) {
+        console.warn("telemetry: Apps Script POST failed (no-cors) too", err2);
+      }
     }
-  } catch (err) {
-    console.warn("telemetry: Apps Script POST failed (ignored)", err);
   }
 }
+
 
 /**
  * Incrementa contador atómico en doc counters/global
