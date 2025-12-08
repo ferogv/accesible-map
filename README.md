@@ -1,19 +1,20 @@
 # 🌍 Mapa Colaborativo de Espacios Accesibles
+### Aplicación web para registrar y consultar espacios públicos accesibles
 
-Proyecto académico desarrollado en el curso **Proyecto integrador de la metodología DevOps** en la Universidad Tecmilenio.  
+Proyecto académico desarrollado en el curso **Proyecto Integrador de la Metodología DevOps** en la Universidad Tecmilenio.  
 El objetivo es construir una aplicación web colaborativa que permita registrar y consultar espacios públicos con características de accesibilidad, integrando prácticas de **DevOps**, **monitoreo** y **seguridad**.
 
 ---
 
 ## ✨ Descripción
 
-El sistema permite a cualquier usuario:
+El sistema permite:
 - Registrar espacios accesibles (parques, plazas, bibliotecas, etc.).
-- Visualizar dichos espacios en un mapa interactivo (Leaflet).
+- Visualizar espacios en un mapa interactivo con Leaflet.
 - Filtrar por categoría y características (rampa, baño adaptado, señalización, estacionamiento).
 - Consultar estadísticas dinámicas.
-- Gestionar accesorios asociados a cada espacio (ej. rampas portátiles, barandales, señalización extra).
-- Visualizar detalles de cada espacio con imágenes y lista de accesorios.
+- Gestionar accesorios asociados a cada espacio.
+- Visualizar detalles con imágenes y lista de accesorios.
 
 Se integraron prácticas de **telemetría**, **monitoreo de métricas** y **DevSecOps** para garantizar calidad, seguridad y trazabilidad.
 
@@ -21,80 +22,77 @@ Se integraron prácticas de **telemetría**, **monitoreo de métricas** y **DevS
 
 ## 🛠️ Tecnologías utilizadas
 
-- **Frontend:** HTML, CSS, JavaScript (ES Modules).
-- **Mapas:** [Leaflet.js](https://leafletjs.com/).
-- **Backend / Base de datos:** Firebase Firestore.
-- **Autenticación:** Firebase Auth (anónima y con proveedores).
-- **CI/CD:** GitHub Actions + GitHub Pages.
-- **Monitoreo y métricas:** Google Apps Script + Google Sheets + Looker Studio.
-- **Pruebas:** Jest (unitarias).
-- **Seguridad:** Firestore Rules con RBAC (roles admin/editor/viewer), análisis de vulnerabilidades con npm audit/Snyk, SonarCloud.
+- **Frontend:** HTML, CSS, JavaScript (ES Modules)  
+- **Mapas:** [Leaflet.js](https://leafletjs.com/)  
+- **Backend / BD:** Firebase Firestore  
+- **Autenticación:** Firebase Auth (anónima y con proveedores)  
+- **CI/CD:** GitHub Actions + GitHub Pages  
+- **Monitoreo:** Google Apps Script + Google Sheets + Looker Studio  
+- **Pruebas:** Jest (unitarias)  
+- **Seguridad:** Firestore Rules con RBAC, npm audit, Snyk, SonarCloud  
 
 ---
 
 ## 📐 Arquitectura
 
-    Cliente Web (GitHub Pages)
-           │
-           ├── Firestore (colección spaces, subcolección accessories)
-           │
-           ├── Firestore (colección logs, counters/global)
-           │
-           └── Apps Script Web App → Google Sheets (events, metrics_summary)
-                                       │
-                                       └── Looker Studio / Dashboards
+```mermaid
+graph TD;
+    A["Cliente Web (GitHub Pages)"] --> B["Firestore - spaces, accessories"];
+    A --> C["Firestore - logs, counters global"];
+    A --> D["Apps Script Web App"];
+    D --> E["Google Sheets - events, metrics summary"];
+    E --> F["Looker Studio Dashboards"];
+```
 
 ---
 
 ## 🚀 Funcionalidades principales
 
-- **Mapa interactivo:** marcadores de espacios, panel de detalle, popup con información.
-- **Registro de espacios:** formulario modal con validación de datos.
-- **Filtros y búsqueda:** por categoría, características y texto libre.
-- **Lista de accesorios:** agregar, eliminar, incrementar/decrementar cantidades.
-- **Estadísticas:** totales y por característica, actualizadas dinámicamente.
-- **Telemetría:** registro estructurado de eventos en Firestore y réplica en Google Sheets.
-- **Métricas y alertas:** agregación periódica de eventos, paneles en Looker Studio, alertas por correo/webhook.
-- **Pruebas automatizadas:** validación de la lógica de accesorios con Jest.
-- **Seguridad:** autenticación, control de acceso por roles, protección de datos sensibles.
+- Mapa interactivo con marcadores y panel de detalle  
+- Registro de espacios con validación de datos  
+- Filtros y búsqueda avanzada  
+- Gestión de accesorios (agregar, eliminar, modificar cantidades)  
+- Estadísticas dinámicas  
+- Telemetría y métricas con alertas configurables  
+- Pruebas automatizadas con Jest  
+- Seguridad con roles y protección de datos sensibles  
 
 ---
 
 ## 📊 Monitoreo y retroalimentación
 
-- **Logs:** colección `logs` en Firestore + hoja `events` en Google Sheets.
-- **Métricas:** hoja `metrics_summary` con agregaciones por minuto.
-- **Visualización:** panel en Looker Studio con gráficos de eventos y métricas.
-- **Alertas:** reglas configurables que envían notificaciones por correo o webhook.
+- **Logs:** colección `logs` en Firestore + hoja `events` en Google Sheets  
+- **Métricas:** hoja `metrics_summary` con agregaciones por minuto  
+- **Visualización:** panel en Looker Studio  
+- **Alertas:** notificaciones por correo o webhook  
 
 ---
 
 ## 🔒 DevSecOps
 
-- **Análisis de vulnerabilidades:** npm audit, Snyk, SonarCloud.
-- **Autenticación y control de acceso:** Firebase Auth + Firestore Rules con roles.
-- **Protección de datos sensibles:** cifrado en cliente (Web Crypto) y gestión de secretos en GitHub Secrets / Firebase.
+- Análisis de vulnerabilidades con npm audit, Snyk y SonarCloud  
+- Autenticación y control de acceso con Firebase Auth + Firestore Rules  
+- Protección de datos sensibles con cifrado en cliente y gestión de secretos  
 
 ---
 
 ## 📈 Próximos pasos
 
-- Migrar el pipeline de métricas a **BigQuery + Cloud Monitoring** para mayor escala.
-- Integrar paneles en **Grafana** o **Datadog**.
-- Extender autenticación con más proveedores y roles granulares.
-- Mejorar la experiencia de usuario con diseño accesible y responsivo.
-- Documentar casos de uso y publicar guías de contribución.
+- Migrar métricas a BigQuery + Cloud Monitoring  
+- Integrar paneles en Grafana o Datadog  
+- Extender autenticación con más proveedores  
+- Mejorar diseño accesible y responsivo  
+- Documentar casos de uso y publicar guías de contribución  
 
 ---
 
 ## 👨‍💻 Autor
 
 **Fernando Gorostieta Vargas**  
-Proyecto académico — Universidad Tecmilenio  
-Cancún, México
+Proyecto académico — Universidad Tecmilenio, Cancún, México  
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto y se distribuye bajo la licencia MIT.
+MIT
