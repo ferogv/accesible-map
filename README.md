@@ -1,98 +1,150 @@
-# 🌍 Mapa Colaborativo de Espacios Accesibles
-### Aplicación web para registrar y consultar espacios públicos accesibles
+# Collaborative Accessible Spaces Map
 
-Proyecto académico desarrollado en el curso **Proyecto Integrador de la Metodología DevOps** en la Universidad Tecmilenio.  
-El objetivo es construir una aplicación web colaborativa que permita registrar y consultar espacios públicos con características de accesibilidad, integrando prácticas de **DevOps**, **monitoreo** y **seguridad**.
+A web app for registering and consulting public spaces with accessibility features — built with a full DevSecOps pipeline.
 
----
-
-## ✨ Descripción
-
-El sistema permite:
-- Registrar espacios accesibles (parques, plazas, bibliotecas, etc.).
-- Visualizar espacios en un mapa interactivo con Leaflet.
-- Filtrar por categoría y características (rampa, baño adaptado, señalización, estacionamiento).
-- Consultar estadísticas dinámicas.
-- Gestionar accesorios asociados a cada espacio.
-- Visualizar detalles con imágenes y lista de accesorios.
-
-Se integraron prácticas de **telemetría**, **monitoreo de métricas** y **DevSecOps** para garantizar calidad, seguridad y trazabilidad.
+**[Live Demo →](https://ferogv.github.io/accesible-map/)**
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## Overview
 
-- **Frontend:** HTML, CSS, JavaScript (ES Modules)  
-- **Mapas:** [Leaflet.js](https://leafletjs.com/)  
-- **Backend / BD:** Firebase Firestore  
-- **Autenticación:** Firebase Auth (anónima y con proveedores)  
-- **CI/CD:** GitHub Actions + GitHub Pages  
-- **Monitoreo:** Google Apps Script + Google Sheets + Looker Studio  
-- **Pruebas:** Jest (unitarias)  
-- **Seguridad:** Firestore Rules con RBAC, npm audit, Snyk, SonarCloud  
+Users can collaboratively register public spaces (parks, plazas, libraries, etc.) with accessibility attributes, view them on an interactive map, and manage associated accessories per space. The project integrates telemetry, role-based access control, automated testing, and CI/CD.
 
 ---
 
-## 📐 Arquitectura
+## Tech Stack
 
-```mermaid
-graph TD;
-    A["Cliente Web (GitHub Pages)"] --> B["Firestore - spaces, accessories"];
-    A --> C["Firestore - logs, counters global"];
-    A --> D["Apps Script Web App"];
-    D --> E["Google Sheets - events, metrics summary"];
-    E --> F["Looker Studio Dashboards"];
+| Layer | Technology |
+|---|---|
+| Frontend | HTML5, CSS3, JavaScript (ES Modules) |
+| Maps | Leaflet.js 1.9.4 |
+| Backend / Database | Firebase Firestore (modular SDK v9.22.2) |
+| Auth | Firebase Auth (anonymous sign-in + custom claims RBAC) |
+| Cloud Functions | Firebase Functions v6 (Node.js 22) |
+| Telemetry | Google Apps Script Web App + Google Sheets + Looker Studio |
+| Testing | Jest (unit tests) |
+| CI/CD | GitHub Actions |
+| Hosting | GitHub Pages |
+| Security | Firestore Security Rules (RBAC), `npm audit`, Snyk, SonarCloud |
+
+---
+
+## Features
+
+- **Interactive map** with Leaflet markers and click-to-register coordinates
+- **Space registration** with validation: name, address, category, coordinates, accessibility features (ramp, adapted bathroom, signage, parking), and image URLs
+- **Filters and search** by category, accessibility features, and free-text (name/address), with debounced input
+- **Detail panel** displaying space info, images, and accessories per space
+- **Accessories management** — add, remove, increment/decrement quantities with atomic Firestore updates (`increment`)
+- **Dynamic statistics bar** with live counts per accessibility feature
+- **Dual telemetry** — structured events written to Firestore `logs` collection and POSTed to a Google Apps Script Web App, which appends rows to Google Sheets for Looker Studio dashboards
+- **Atomic metrics counters** via Firestore `increment` on a `counters/global` document
+- **Role-based access control** via Firebase Auth custom claims (`admin`, `editor`, `viewer`) enforced at Firestore Security Rules level
+- **Cloud Function trigger** — `onLogCreate` appends every new log document to a configured Google Sheet via the Sheets API
+- **Automated unit tests** with Jest covering accessory CRUD and telemetry
+- **CI pipeline** with lint, test, `npm audit`, optional Snyk and SonarCloud scans
+- **CD pipeline** deploying to GitHub Pages on every push to `main`
+
+---
+
+## Project Structure
+
+```
+accesible-map/
+├── index.html              # Main map view
+├── accessories.html        # Accessories management view
+├── app.js                  # Map init, space loading, filters, registration
+├── accesorios.js           # Accessory CRUD logic + telemetry
+├── detalle.js              # Detail panel rendering
+├── estadisticas.js         # Stats bar updates
+├── filtros.js              # Filter form logic with debounce
+├── firebase.js             # Firebase init and Firestore re-exports
+├── telemetry.js            # Dual-write: Firestore logs + Apps Script POST
+├── styles.css              # CSS Grid layout + component styles
+├── accesorios.test.js      # Jest unit tests — accessory CRUD
+├── telemetry.test.js       # Jest unit tests — telemetry
+├── firestore.rules         # RBAC security rules
+├── functions/
+│   └── index.js            # Cloud Function: onLogCreate → Google Sheets
+├── scripts/
+│   └── setCustomClaims.js  # Admin script to assign RBAC roles
+└── .github/workflows/
+    ├── ci.yml              # Lint, test, audit, Snyk, SonarCloud
+    └── deploy.yml          # GitHub Pages deployment
 ```
 
 ---
 
-## 🚀 Funcionalidades principales
+## Architecture
 
-- Mapa interactivo con marcadores y panel de detalle  
-- Registro de espacios con validación de datos  
-- Filtros y búsqueda avanzada  
-- Gestión de accesorios (agregar, eliminar, modificar cantidades)  
-- Estadísticas dinámicas  
-- Telemetría y métricas con alertas configurables  
-- Pruebas automatizadas con Jest  
-- Seguridad con roles y protección de datos sensibles  
+```
+Client (GitHub Pages)
+    │
+    ├── Firestore ──── spaces / accessories / logs / counters
+    │
+    ├── Firebase Auth (anonymous + custom claims RBAC)
+    │
+    └── Telemetry POST ──── Apps Script Web App
+                                │
+                          Google Sheets
+                                │
+                          Looker Studio
 
----
-
-## 📊 Monitoreo y retroalimentación
-
-- **Logs:** colección `logs` en Firestore + hoja `events` en Google Sheets  
-- **Métricas:** hoja `metrics_summary` con agregaciones por minuto  
-- **Visualización:** panel en Looker Studio  
-- **Alertas:** notificaciones por correo o webhook  
-
----
-
-## 🔒 DevSecOps
-
-- Análisis de vulnerabilidades con npm audit, Snyk y SonarCloud  
-- Autenticación y control de acceso con Firebase Auth + Firestore Rules  
-- Protección de datos sensibles con cifrado en cliente y gestión de secretos  
+Firestore trigger (onLogCreate)
+    └── Cloud Function ──── Google Sheets API
+```
 
 ---
 
-## 📈 Próximos pasos
+## Security Rules Summary
 
-- Migrar métricas a BigQuery + Cloud Monitoring  
-- Integrar paneles en Grafana o Datadog  
-- Extender autenticación con más proveedores  
-- Mejorar diseño accesible y responsivo  
-- Documentar casos de uso y publicar guías de contribución  
-
----
-
-## 👨‍💻 Autor
-
-**Fernando Gorostieta Vargas**  
-Proyecto académico — Universidad Tecmilenio, Cancún, México  
+| Collection | Read | Create | Update / Delete |
+|---|---|---|---|
+| `spaces` | Public | Authenticated | Admin only |
+| `spaces/{id}/accessories` | Public | Editor or Admin | Editor (update), Admin (delete) |
+| `logs` | Editor or Admin | Authenticated | Never |
+| `counters` | Authenticated | Admin | Admin |
 
 ---
 
-## 📄 Licencia
+## Local Development
 
-MIT
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Lint
+npm run lint
+```
+
+No local server required — the app runs directly from the filesystem or any static host via ES Modules and Firebase's CDN SDK.
+
+To deploy Cloud Functions:
+
+```bash
+cd functions
+npm install
+firebase deploy --only functions
+```
+
+To assign roles to a user:
+
+```bash
+node scripts/setCustomClaims.js <uid> <admin|editor|viewer>
+```
+
+---
+
+## Author
+
+**Fernando Gorostieta Vargas**
+[linkedin.com/in/ferogv](https://linkedin.com/in/ferogv) · [github.com/ferogv](https://github.com/ferogv)
+
+---
+
+## License
+
+MIT — see [`LICENSE`](LICENSE)
